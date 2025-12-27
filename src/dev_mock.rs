@@ -1,16 +1,12 @@
 use iced::{daemon, Element, Settings, Theme};
-use iced::widget::canvas::{self, Canvas, Frame, Path, Stroke};
+use iced::widget::canvas::{self, Canvas, Frame, Path, Stroke, LineCap};
 use iced::{Length, Point, Rectangle, Size};
 use data::data_format::Candlestick;
 
-pub fn run_mock() -> iced::Result<()> {
+pub fn run_mock() {
     let _ = daemon(MockApp::new, MockApp::update, MockApp::view)
-        .settings(Settings {
-            window: iced::window::Settings { size: (900, 600), ..Default::default() },
-            ..Settings::default()
-        })
+        .settings(Settings { antialiasing: true, ..Settings::default() })
         .run();
-    Ok(())
 }
 
 struct MockApp {
@@ -29,7 +25,7 @@ impl MockApp {
         iced::Task::none()
     }
 
-    fn view(&self) -> Element<Message> {
+    fn view(&self) -> Element<'_, Message> {
         let canvas = Canvas::new(ChartCanvas { data: &self.data })
             .width(Length::Fill)
             .height(Length::Fill);
@@ -45,8 +41,8 @@ struct ChartCanvas<'a> {
 impl<'a> canvas::Program<Message> for ChartCanvas<'a> {
     type State = ();
 
-    fn draw(&self, _state: &Self::State, _renderer: &iced::Renderer, _theme: &Theme, bounds: Rectangle, _cursor: iced_core::mouse::Cursor) -> Vec<canvas::Geometry> {
-        let mut frame = Frame::new(bounds.size());
+    fn draw(&self, _state: &Self::State, renderer: &iced::Renderer, _theme: &Theme, bounds: Rectangle, _cursor: iced_core::mouse::Cursor) -> Vec<canvas::Geometry<iced::Renderer>> {
+        let mut frame = Frame::new(renderer, bounds.size());
 
         if self.data.is_empty() {
             return vec![frame.into_geometry()];
@@ -79,7 +75,7 @@ impl<'a> canvas::Program<Message> for ChartCanvas<'a> {
 
             // wick
             let wick = Path::line(Point::new(x, top), Point::new(x, bottom));
-            frame.stroke(&wick, Stroke { width: 1.0, color: iced::Color::WHITE, line_cap: iced::widget::canvas::LineCap::Round, ..Stroke::default() });
+            frame.stroke(&wick, Stroke::with_color(Stroke { width: 1.0, line_cap: LineCap::Round, ..Stroke::default() }, iced::Color::WHITE));
 
             // body
             let bw = (w / n) * 0.6;
@@ -91,7 +87,7 @@ impl<'a> canvas::Program<Message> for ChartCanvas<'a> {
             let rect = Path::rectangle(Point::new(left, top_body), Size::new(bw, bottom_body - top_body));
             let color = if close >= open { iced::Color::from_rgb(0.0, 0.8, 0.0) } else { iced::Color::from_rgb(0.8, 0.0, 0.0) };
             frame.fill(&rect, color);
-            frame.stroke(&rect, Stroke { width: 1.0, color: iced::Color::BLACK, ..Stroke::default() });
+            frame.stroke(&rect, Stroke::with_color(Stroke { width: 1.0, ..Stroke::default() }, iced::Color::BLACK));
         }
 
         vec![frame.into_geometry()]

@@ -2,6 +2,7 @@ pub mod aggr;
 pub mod audio;
 pub mod chart;
 pub mod config;
+pub mod data_format;
 pub mod layout;
 pub mod log;
 pub mod panel;

@@ -4,6 +4,50 @@ pub mod indicator;
 pub mod kline;
 mod scale;
 
+use data::data_format::{ChartData, Candlestick, Indicators};
+
+#[cfg(test)]
+mod tests {
+    use super::SimpleChart;
+    use data::data_format::{ChartData, Candlestick, Indicators};
+
+    #[test]
+    fn test_simple_chart_update() {
+        let mock_data = ChartData {
+            symbol: "AAPL".to_string(),
+            timeframe: "1m".to_string(),
+            data: vec![
+                Candlestick {
+                    timestamp: 1672444800,
+                    open: 150.0,
+                    high: 152.0,
+                    low: 149.5,
+                    close: 151.0,
+                    volume: 100000.0,
+                },
+                Candlestick {
+                    timestamp: 1672444860,
+                    open: 151.0,
+                    high: 153.0,
+                    low: 150.5,
+                    close: 152.5,
+                    volume: 120000.0,
+                },
+            ],
+            indicators: Some(Indicators {
+                sma_50: Some(vec![150.5, 151.0]),
+                rsi: Some(vec![70.0, 65.0]),
+            }),
+        };
+
+        let mut chart = SimpleChart::new();
+        chart.update_data(mock_data);
+
+        assert_eq!(chart.data.len(), 2);
+        assert!(chart.indicators.is_some());
+    }
+}
+
 use crate::style;
 use crate::widget::multi_split::{DRAG_SIZE, MultiSplit};
 use crate::widget::tooltip;
@@ -81,6 +125,24 @@ pub trait Chart: PlotConstants + canvas::Program<Message> {
     fn supports_fit_autoscaling(&self) -> bool;
 
     fn is_empty(&self) -> bool;
+}
+
+// Minimal concrete chart used for tests and simple data feeding
+#[derive(Default, Debug, Clone)]
+pub struct SimpleChart {
+    pub data: Vec<Candlestick>,
+    pub indicators: Option<Indicators>,
+}
+
+impl SimpleChart {
+    pub fn new() -> Self {
+        Self { data: Vec::new(), indicators: None }
+    }
+
+    pub fn update_data(&mut self, new_data: ChartData) {
+        self.data = new_data.data;
+        self.indicators = new_data.indicators;
+    }
 }
 
 fn canvas_interaction<T: Chart>(

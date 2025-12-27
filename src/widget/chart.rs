@@ -2,6 +2,8 @@ pub mod comparison;
 
 use chrono::{TimeZone, Utc};
 use exchange::TickerInfo;
+use crate::chart::Chart;
+use data::data_format::Candlestick;
 
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 pub struct Zoom(pub usize);
@@ -363,5 +365,28 @@ pub mod domain {
         let span = (max_pct - min_pct).max(1e-6);
         let pad = span * 0.05;
         Some((min_pct - pad, max_pct + pad))
+    }
+}
+
+pub struct ChartWidget;
+
+impl ChartWidget {
+    // Simplified render for now to avoid depending on concrete Chart internals
+    pub fn render(&self) {
+        // Clear the existing chart area
+        self.clear();
+        // Placeholder: actual rendering will use chart data when we add a proper interface
+    }
+
+    fn draw_candlestick(&self, candlestick: &Candlestick) {
+        // Logic to draw a single candlestick
+    }
+
+    fn draw_indicator_line(&self, data: &Vec<f64>, label: &str) {
+        // Logic to draw an indicator line
+    }
+
+    fn clear(&self) {
+        // Logic to clear the chart area
     }
 }

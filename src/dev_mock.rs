@@ -3,8 +3,12 @@ use iced::widget::canvas::{self, Canvas, Frame, Path, Stroke, LineCap};
 use iced::{Length, Point, Rectangle, Size};
 use data::data_format::Candlestick;
 
+fn view_fn<'a>(state: &'a MockApp, _renderer: &'a iced::Renderer) -> Element<'a, Message> {
+    state.view()
+}
+
 pub fn run_mock() {
-    let _ = daemon(MockApp::new, MockApp::update, MockApp::view)
+    let _ = daemon(MockApp::new, MockApp::update, view_fn)
         .settings(Settings { antialiasing: true, ..Settings::default() })
         .run();
 }

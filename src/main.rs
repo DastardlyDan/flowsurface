@@ -39,9 +39,7 @@ fn main() {
 
     // If FLOWSURFACE_MOCK_UI is set, run a lightweight mock GUI to visualize mock candlesticks
     if std::env::var("FLOWSURFACE_MOCK_UI").is_ok() {
-        if let Err(e) = dev_mock::run_mock() {
-            eprintln!("Failed to run mock UI: {}", e);
-        }
+        dev_mock::run_mock();
         return;
     }
 

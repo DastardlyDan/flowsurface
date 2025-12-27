@@ -10,6 +10,9 @@ mod style;
 mod widget;
 mod window;
 
+// Dev-only mock UI
+mod dev_mock;
+
 use data::config::theme::default_theme;
 use data::{layout::WindowSpec, sidebar};
 use layout::{LayoutId, configuration};
@@ -33,6 +36,14 @@ use std::{borrow::Cow, collections::HashMap, vec};
 
 fn main() {
     logger::setup(cfg!(debug_assertions)).expect("Failed to initialize logger");
+
+    // If FLOWSURFACE_MOCK_UI is set, run a lightweight mock GUI to visualize mock candlesticks
+    if std::env::var("FLOWSURFACE_MOCK_UI").is_ok() {
+        if let Err(e) = dev_mock::run_mock() {
+            eprintln!("Failed to run mock UI: {}", e);
+        }
+        return;
+    }
 
     std::thread::spawn(data::cleanup_old_market_data);
 

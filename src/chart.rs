@@ -128,7 +128,7 @@ pub trait Chart: PlotConstants + canvas::Program<Message> {
 }
 
 // Minimal concrete chart used for tests and simple data feeding
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug)]
 pub struct SimpleChart {
     pub data: Vec<Candlestick>,
     pub indicators: Option<Indicators>,

@@ -1,16 +1,16 @@
-use iced::{Application, executor, Command, Element, Settings, Theme};
+use iced::{daemon, Element, Settings, Theme};
 use iced::widget::canvas::{self, Canvas, Frame, Path, Stroke};
 use iced::{Length, Point, Rectangle, Size};
 use data::data_format::Candlestick;
 
 pub fn run_mock() -> iced::Result<()> {
-    MockApp::run(Settings {
-        window: iced::window::Settings {
-            size: (900, 600),
-            ..Default::default()
-        },
-        ..Settings::default()
-    })
+    let _ = daemon(MockApp::new, MockApp::update, MockApp::view)
+        .settings(Settings {
+            window: iced::window::Settings { size: (900, 600), ..Default::default() },
+            ..Settings::default()
+        })
+        .run();
+    Ok(())
 }
 
 struct MockApp {
@@ -20,22 +20,13 @@ struct MockApp {
 #[derive(Debug, Clone)]
 enum Message {}
 
-impl Application for MockApp {
-    type Message = Message;
-    type Executor = executor::Default;
-    type Flags = ();
-    type Theme = Theme;
-
-    fn new(_flags: ()) -> (Self, Command<Message>) {
-        (Self { data: make_mock_data() }, Command::none())
+impl MockApp {
+    fn new() -> (Self, iced::Task<Message>) {
+        (Self { data: make_mock_data() }, iced::Task::none())
     }
 
-    fn title(&self) -> String {
-        "Flowsurface Mock Chart".into()
-    }
-
-    fn update(&mut self, _message: Message) -> Command<Message> {
-        Command::none()
+    fn update(&mut self, _message: Message) -> iced::Task<Message> {
+        iced::Task::none()
     }
 
     fn view(&self) -> Element<Message> {
@@ -44,10 +35,6 @@ impl Application for MockApp {
             .height(Length::Fill);
 
         canvas.into()
-    }
-
-    fn theme(&self) -> Self::Theme {
-        Theme::Dark
     }
 }
 
@@ -58,7 +45,7 @@ struct ChartCanvas<'a> {
 impl<'a> canvas::Program<Message> for ChartCanvas<'a> {
     type State = ();
 
-    fn draw(&self, _state: &Self::State, renderer: &iced::Renderer, theme: &Theme, bounds: Rectangle, _cursor: iced_core::mouse::Cursor) -> Vec<canvas::Geometry> {
+    fn draw(&self, _state: &Self::State, _renderer: &iced::Renderer, _theme: &Theme, bounds: Rectangle, _cursor: iced_core::mouse::Cursor) -> Vec<canvas::Geometry> {
         let mut frame = Frame::new(bounds.size());
 
         if self.data.is_empty() {

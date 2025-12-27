@@ -128,11 +128,12 @@ pub trait Chart: PlotConstants + canvas::Program<Message> {
 }
 
 // Minimal concrete chart used for tests and simple data feeding
+#[allow(dead_code)]
 #[derive(Default, Debug)]
 pub struct SimpleChart {
     pub data: Vec<Candlestick>,
     pub indicators: Option<Indicators>,
-}
+} 
 
 impl SimpleChart {
     pub fn new() -> Self {

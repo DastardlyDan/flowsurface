@@ -2,7 +2,6 @@ pub mod comparison;
 
 use chrono::{TimeZone, Utc};
 use exchange::TickerInfo;
-use crate::chart::Chart;
 use data::data_format::Candlestick;
 
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
@@ -370,6 +369,7 @@ pub mod domain {
 
 pub struct ChartWidget;
 
+#[allow(dead_code)]
 impl ChartWidget {
     // Simplified render for now to avoid depending on concrete Chart internals
     pub fn render(&self) {
@@ -378,15 +378,15 @@ impl ChartWidget {
         // Placeholder: actual rendering will use chart data when we add a proper interface
     }
 
-    fn draw_candlestick(&self, candlestick: &Candlestick) {
+    fn draw_candlestick(&self, _candlestick: &Candlestick) {
         // Logic to draw a single candlestick
     }
 
-    fn draw_indicator_line(&self, data: &Vec<f64>, label: &str) {
+    fn draw_indicator_line(&self, _data: &Vec<f64>, _label: &str) {
         // Logic to draw an indicator line
     }
 
     fn clear(&self) {
         // Logic to clear the chart area
     }
-}
+} 
